@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  description: |
+    API definition for the backend code challenge.
+  version: "1.0.1"
+  title: Backend Code Challenge
+  license:
+    name: SFL © All rights reserved
+paths:
+  /stats:
+    post:
+      tags:
+        - booking
+      summary: Calculate information on profit per night
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/BookingRequestList'
+  /maximize:
+    post:
+      tags:
+        - booking
+      summary: Calculate best combination of booking requests that maximizes profit
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaximizeResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        $ref: '#/components/requestBodies/BookingRequestList'
+components:
+  schemas:
+    ValidationErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error! Field XXX is mandatory"
+          description: Human friendly error message
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Internal Server Error"
+          description: Human friendly error message
+    StatsResponse:
+      type: object
+      properties:
+        avg_night:
+          type: number
+          format: float
+          example: 75.00
+          description: The average profit per night from all the booking requests (two digit precision)
+          multipleOf: 0.01
+        min_night:
+          type: number
+          format: float
+          multipleOf: 0.01
+          example: 25.50
+          description: The minimum profit per night from all the booking requests (two digit precision)
+        max_night:
+          type: number
+          format: float
+          multipleOf: 0.01
+          example: 35.75
+          description: The maximum profit per night from all the booking requests (two digit precision)
+    MaximizeResponse:
+      type: object
+      properties:
+        request_ids:
+          type: array
+          items:
+            type: string
+          description: List of booking request IDs
+          example: ["acme_AAAA", "foo_1234"]
+        total_profit:
+          type: number
+          format: float
+          example: 500.25
+          description: The profit obtained from the best combination of booking requests (two digit precision)
+          multipleOf: 0.01
+        avg_night:
+          type: number
+          format: float
+          example: 75.00
+          description: The average profit per night of the best combination (two digit precision)
+          multipleOf: 0.01
+        min_night:
+          type: number
+          format: float
+          multipleOf: 0.01
+          example: 25.50
+          description: The minimum profit per night of the best combination (two digit precision)
+        max_night:
+          type: number
+          format: float
+          multipleOf: 0.01
+          example: 35.75
+          description: The maximum profit per night of the best combination (two digit precision)
+    BookingRequestList:
+      type: array
+      items:
+        $ref: '#/components/schemas/BookingRequest'
+    BookingRequest:
+      type: object
+      required:
+        - request_id
+        - check_in
+        - nights
+        - selling_rate
+        - margin
+      properties:
+        request_id:
+          type: string
+          example: acme_AAAA
+          description: Unique ID of the booking request
+        check_in:
+          type: string
+          format: date
+          example: YYYY-MM-DD
+          description: Starting date for the booking
+        nights:
+          type: integer
+          format: int32
+          example: 3
+          description: Number of nights for the booking
+        selling_rate:
+          type: integer
+          format: int32
+          example: 100
+          description: Retail price for the whole stay
+        margin:
+          type: integer
+          format: int32
+          example: 20
+          description: Percentage that represents the benefit obtained from the selling rate
+  requestBodies:
+    BookingRequestList:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BookingRequestList'
+      description: List of booking requests
+      required: true

@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  s4l-service:
+    build: ./s4l-service
+    image: s4l-service
+    container_name: s4l-challenge
+    restart: always
+    ports:
+      - "${HOST_PORT}:8080"
