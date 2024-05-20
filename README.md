@@ -71,9 +71,14 @@ There is two alternatives to launch the service:
 - We can modify some docker properties defined in the `.env` file
   - `HOST_PORT` will set the user machine port where the service will be available
 
+#### Default API paths
+
+- [POST] http://localhost:8080/stats
+- [POST] http://localhost:8080/maximize
+
 ### Local results
 
-Using Postman we have defined an script to generate random bookings:
+Using Postman we have defined a script to generate random bookings:
 
 ```
 let num = 10000;
